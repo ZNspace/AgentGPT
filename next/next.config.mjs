@@ -20,7 +20,8 @@ const config = {
       aggregateTimeout: 300
     };
     return config;
-  }
+  },
+  transpilePackages: ['three']
 };
 
 export default config;

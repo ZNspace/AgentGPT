@@ -1,48 +1,53 @@
-import type { PropsWithChildren } from "react";
-import { useState } from "react";
 import clsx from "clsx";
-import DottedGridBackground from "../components/DottedGridBackground";
+import type { PropsWithChildren } from "react";
+import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+import { useAspect, useVideoTexture, useTexture } from "@react-three/drei";
+
 import AppHead from "../components/AppHead";
+import DottedGridBackground from "../components/DottedGridBackground";
 import { useTheme } from "../hooks/useTheme";
-import Sidebar, { SidebarControlButton } from "../components/drawer/Sidebar";
 
 const DashboardLayout = (props: PropsWithChildren) => {
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
-
   //add event listener to detect OS theme changes
   useTheme();
 
   return (
     <>
       <AppHead />
-
-      {/*Mobile sidebar*/}
-      <Sidebar show={mobileSidebarOpen} setShow={setMobileSidebarOpen} />
-      <div className={mobileSidebarOpen ? "hidden" : "lg:hidden"}>
-        <SidebarControlButton show={mobileSidebarOpen} setShow={setMobileSidebarOpen} />
-      </div>
-
-      {/* Desktop sidebar */}
-      <div className="hidden lg:visible lg:inset-y-0  lg:flex lg:w-64 lg:flex-col">
-        <Sidebar show={desktopSidebarOpen} setShow={setDesktopSidebarOpen} />
-      </div>
-      <div className={desktopSidebarOpen ? "hidden" : "hidden lg:block"}>
-        <SidebarControlButton show={desktopSidebarOpen} setShow={setDesktopSidebarOpen} />
-      </div>
-
-      <main
-        className={clsx(
-          "bg-gradient-to-b from-[#2B2B2B] to-[#1F1F1F] duration-300",
-          desktopSidebarOpen && "lg:pl-64"
-        )}
-      >
+      <main className={clsx("bg-gradient-to-b from-[#2B2B2B] to-[#1F1F1F] duration-300")}>
         <DottedGridBackground className="min-w-screen min-h-screen">
           {props.children}
         </DottedGridBackground>
       </main>
+
+      <Canvas orthographic>
+        <Scene />
+      </Canvas>
     </>
   );
 };
+
+function Scene() {
+  const size = useAspect(1800, 1000);
+  return (
+    <mesh scale={size}>
+      <planeGeometry />
+      <Suspense fallback={<FallbackMaterial url="10.jpg" />}>
+        <VideoMaterial url="10.mp4" />
+      </Suspense>
+    </mesh>
+  );
+}
+
+function VideoMaterial({ url }) {
+  const texture = useVideoTexture(url);
+  return <meshBasicMaterial map={texture} toneMapped={false} />;
+}
+
+function FallbackMaterial({ url }) {
+  const texture = useTexture(url);
+  return <meshBasicMaterial map={texture} toneMapped={false} />;
+}
 
 export default DashboardLayout;

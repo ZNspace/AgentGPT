@@ -1,46 +1,43 @@
-import React, { useEffect, useRef } from "react";
-import { useTranslation } from "next-i18next";
+import clsx from "clsx";
+import { AnimatePresence, motion } from "framer-motion";
 import { type GetStaticProps, type NextPage } from "next";
-import Button from "../components/Button";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useRouter } from "next/router";
+import React, { useEffect, useRef } from "react";
 import { FaCog, FaRobot, FaStar } from "react-icons/fa";
-import AutonomousAgent from "../services/agent/autonomous-agent";
+import nextI18NextConfig from "../../next-i18next.config.js";
+import Button from "../components/Button";
+import Input from "../components/Input";
+import { TaskWindow } from "../components/TaskWindow";
+import AgentControls from "../components/console/AgentControls";
+import { ChatMessage } from "../components/console/ChatMessage";
+import ChatWindow from "../components/console/ChatWindow";
+import Summarize from "../components/console/SummarizeButton";
 import HelpDialog from "../components/dialog/HelpDialog";
-import { useAuth } from "../hooks/useAuth";
+import { ToolsDialog } from "../components/dialog/ToolsDialog";
+import FadeIn from "../components/motions/FadeIn";
+import Expand from "../components/motions/expand";
 import { useAgent } from "../hooks/useAgent";
-import { isEmptyOrBlank } from "../utils/whitespace";
+import { useAuth } from "../hooks/useAuth";
+import { useSettings } from "../hooks/useSettings";
+import DashboardLayout from "../layout/dashboard";
+import { AgentApi } from "../services/agent/agent-api";
+import { DefaultAgentRunModel } from "../services/agent/agent-run-model";
+import AutonomousAgent from "../services/agent/autonomous-agent";
+import { MessageService } from "../services/agent/message-service";
 import {
   resetAllAgentSlices,
   resetAllMessageSlices,
   useAgentStore,
   useMessageStore,
 } from "../stores";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { languages } from "../utils/languages";
-import nextI18NextConfig from "../../next-i18next.config.js";
-import { SignInDialog } from "../components/dialog/SignInDialog";
-import { ToolsDialog } from "../components/dialog/ToolsDialog";
-import DashboardLayout from "../layout/dashboard";
-import AppTitle from "../components/AppTitle";
-import FadeIn from "../components/motions/FadeIn";
-import Input from "../components/Input";
-import clsx from "clsx";
-import Expand from "../components/motions/expand";
-import ChatWindow from "../components/console/ChatWindow";
-import { TaskWindow } from "../components/TaskWindow";
-import { AnimatePresence, motion } from "framer-motion";
-import { useSettings } from "../hooks/useSettings";
-import { useRouter } from "next/router";
 import { useAgentInputStore } from "../stores/agentInputStore";
-import { MessageService } from "../services/agent/message-service";
-import { DefaultAgentRunModel } from "../services/agent/agent-run-model";
 import { resetAllTaskSlices, useTaskStore } from "../stores/taskStore";
-import { ChatWindowTitle } from "../components/console/ChatWindowTitle";
-import { AgentApi } from "../services/agent/agent-api";
 import { toApiModelSettings } from "../utils/interfaces";
+import { languages } from "../utils/languages";
+import { isEmptyOrBlank } from "../utils/whitespace";
 import ExampleAgents from "../components/console/ExampleAgents";
-import Summarize from "../components/console/SummarizeButton";
-import AgentControls from "../components/console/AgentControls";
-import { ChatMessage } from "../components/console/ChatMessage";
 
 const Home: NextPage = () => {
   const { t } = useTranslation("indexPage");
@@ -146,26 +143,11 @@ const Home: NextPage = () => {
       <HelpDialog />
       <ToolsDialog show={showToolsDialog} close={() => setShowToolsDialog(false)} />
 
-      <SignInDialog show={showSignInDialog} close={() => setShowSignInDialog(false)} />
       <div id="content" className="flex min-h-screen w-full items-center justify-center">
         <div
           id="layout"
           className="flex h-screen w-full max-w-screen-xl flex-col items-center gap-1 p-2 sm:gap-3 sm:p-4"
         >
-          {
-            <AnimatePresence>
-              {!fullscreen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "fit-content" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.5, type: "easeInOut" }}
-                >
-                  <AppTitle />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          }
           <div>
             <Button
               className={clsx(
@@ -187,13 +169,12 @@ const Home: NextPage = () => {
               disabled={mobileVisibleWindow == "Tasks"}
               onClick={() => handleVisibleWindowClick("Tasks")}
             >
-              Tasks
+              任务
             </Button>
           </div>
           <Expand className="flex w-full flex-grow overflow-hidden">
             <ChatWindow
               messages={messages}
-              title={<ChatWindowTitle model={settings.customModelName} />}
               visibleOnMobile={mobileVisibleWindow === "Chat"}
               chatControls={
                 agent
@@ -298,7 +279,7 @@ const Home: NextPage = () => {
 
 export default Home;
 
-export const getStaticProps: GetStaticProps = async ({ locale = "en" }) => {
+export const getStaticProps: GetStaticProps = async ({ locale = "zh" }) => {
   const supportedLocales = languages.map((language) => language.code);
   const chosenLocale = supportedLocales.includes(locale) ? locale : "en";
 

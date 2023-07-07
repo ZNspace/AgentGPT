@@ -21,14 +21,8 @@ const ExampleAgents = ({ setAgentRun }: ExampleAgentsProps) => {
       </FadeIn>
       <FadeIn delay={0.9} duration={0.5}>
         <div className="m-2 flex flex-col justify-between gap-2 sm:m-4 sm:flex-row">
-          <ExampleAgentButton name="PlatformerGPT 🎮" setAgentRun={setAgentRun}>
-            Write some code to make a platformer game.
-          </ExampleAgentButton>
-          <ExampleAgentButton name="TravelGPT 🌴" setAgentRun={setAgentRun}>
-            Plan a detailed trip to Hawaii.
-          </ExampleAgentButton>
           <ExampleAgentButton name="ResearchGPT 📜" setAgentRun={setAgentRun}>
-            Create a comprehensive report of the Nike company
+            生成新能源行业的综合报告
           </ExampleAgentButton>
         </div>
       </FadeIn>
