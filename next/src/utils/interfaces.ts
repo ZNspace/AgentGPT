@@ -1,6 +1,6 @@
+import type { Session } from "next-auth";
 import type { Analysis } from "../services/agent/analysis";
 import type { GPTModelNames, ModelSettings } from "../types";
-import type { Session } from "next-auth";
 
 export interface ApiModelSettings {
   language: string;
@@ -23,8 +23,10 @@ export const toApiModelSettings = (modelSettings: ModelSettings, session?: Sessi
 
 export interface RequestBody {
   run_id?: string;
+  session_id?: string;
+  message_id?: string;
   model_settings: ApiModelSettings;
-  goal: string;
+  goal?: string;
   task?: string;
   tasks?: string[];
   last_task?: string;

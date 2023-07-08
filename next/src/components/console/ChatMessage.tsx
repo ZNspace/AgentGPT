@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import { useTranslation } from "next-i18next";
 import clsx from "clsx";
-import { getMessageContainerStyle, getTaskStatusIcon } from "../utils/helpers";
-import MarkdownRenderer from "./MarkdownRenderer";
+import { useTranslation } from "next-i18next";
+import { useState } from "react";
+import { FaCheck } from "react-icons/fa";
+import { FiClipboard } from "react-icons/fi";
 import type { Message } from "../../types/message";
 import { MESSAGE_TYPE_GOAL, MESSAGE_TYPE_SYSTEM } from "../../types/message";
-import Button from "../../ui/button";
 import {
-  getTaskStatus,
-  isAction,
   TASK_STATUS_COMPLETED,
   TASK_STATUS_FINAL,
   TASK_STATUS_STARTED,
+  getTaskStatus,
+  isAction,
 } from "../../types/task";
-import { FaCheck } from "react-icons/fa";
-import { FiClipboard } from "react-icons/fi";
+import Button from "../../ui/button";
+import { getMessageContainerStyle, getTaskStatusIcon } from "../utils/helpers";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 const ChatMessage = ({ message }: { message: Message }) => {
   const [t] = useTranslation();

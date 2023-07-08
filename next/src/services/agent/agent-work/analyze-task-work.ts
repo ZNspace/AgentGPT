@@ -13,6 +13,7 @@ export default class AnalyzeTaskWork implements AgentWork {
   run = async () => {
     this.parent.api.saveMessages([this.parent.messageService.startTaskMessage(this.task)]);
     this.task = this.parent.model.updateTaskStatus(this.task, "executing");
+    debugger
     this.analysis = await this.parent.api.analyzeTask(this.task.value);
   };
 

@@ -6,7 +6,7 @@ const AppHead = () => {
 
   return (
     <Head>
-      <title>AgentGPT</title>
+      <title>投研助理</title>
       <meta name="description" content={description} />
       <meta name="twitter:site" content="@AgentGPT" />
       <meta name="twitter:card" content="summary_large_image" />
@@ -22,13 +22,10 @@ const AppHead = () => {
       <meta property="og:image:width" content="1280" />
       <meta property="og:image:height" content="640" />
       <meta property="og:type" content="website" />
-      <meta
-        name="google-site-verification"
-        content="sG4QDkC8g2oxKSopgJdIe2hQ_SaJDaEaBjwCXZNkNWA"
-      />
+      <meta name="google-site-verification" content="sG4QDkC8g2oxKSopgJdIe2hQ_SaJDaEaBjwCXZNkNWA" />
       <link rel="icon" href="/favicon.ico" />
     </Head>
-  )
+  );
 }
 
 export default AppHead;

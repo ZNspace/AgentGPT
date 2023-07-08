@@ -6,16 +6,16 @@ import {
   FaStopCircle,
   FaThumbtack,
 } from "react-icons/fa";
+import type { Message } from "../../types/message";
+import { MESSAGE_TYPE_ERROR, MESSAGE_TYPE_GOAL } from "../../types/message";
 import {
-  getTaskStatus,
-  isTask,
   TASK_STATUS_COMPLETED,
   TASK_STATUS_EXECUTING,
   TASK_STATUS_FINAL,
   TASK_STATUS_STARTED,
+  getTaskStatus,
+  isTask,
 } from "../../types/task";
-import type { Message } from "../../types/message";
-import { MESSAGE_TYPE_ERROR, MESSAGE_TYPE_GOAL } from "../../types/message";
 
 export const getMessageContainerStyle = (message: Message) => {
   if (!isTask(message)) {
@@ -34,7 +34,7 @@ export const getMessageContainerStyle = (message: Message) => {
       return "border-white/20 hover:border-white/40";
     case TASK_STATUS_COMPLETED:
     case TASK_STATUS_FINAL:
-      return "border-green-500 hover:border-green-400";
+      return "border-[#35b6ff] hover:border-blue-400";
     default:
       return "";
   }

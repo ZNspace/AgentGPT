@@ -1,10 +1,11 @@
-import type { RequestBody } from "../../utils/interfaces";
-import type { Analysis } from "./analysis";
-import type { Session } from "next-auth";
-import { useAgentStore } from "../../stores";
-import * as apiUtils from "../api-utils";
+import { Session } from "next-auth";
+import { v1 } from "uuid";
 import type { AgentUtils } from "../../hooks/useAgent";
+import { useAgentStore } from "../../stores";
 import type { Message } from "../../types/message";
+import type { RequestBody } from "../../utils/interfaces";
+import * as apiUtils from "../api-utils";
+import type { Analysis } from "./analysis";
 
 type ApiProps = Pick<RequestBody, "model_settings" | "goal"> & {
   name: string;
@@ -16,6 +17,7 @@ export class AgentApi {
   readonly props: ApiProps;
   agentId: string | undefined;
   runId: string | undefined;
+  message_id?: string;
 
   constructor(apiProps: ApiProps) {
     this.props = apiProps;
@@ -40,7 +42,8 @@ export class AgentApi {
   }
 
   async getInitialTasks(): Promise<string[]> {
-    return (await this.post<{ newTasks: string[] }>("/api/agent/start", {})).newTasks;
+    await this.post("/bot/investment-research/chat/v2/completions", {});
+    return ["获取思维链"];
   }
 
   async getAdditionalTasks(
@@ -52,20 +55,17 @@ export class AgentApi {
     result: string
   ): Promise<string[]> {
     return (
-      await this.post<{ newTasks: string[] }>("/api/agent/create", {
+      await this.post<{ thought: string[] }>("/bot/investment-research/chat/v2/completions/thought", {
         result: result,
         last_task: tasks.current,
         tasks: tasks.remaining,
         completed_tasks: tasks.completed,
       })
-    ).newTasks;
+    ).thought;
   }
 
-  async analyzeTask(task: string): Promise<Analysis> {
-    return await this.post<Analysis>("/api/agent/analyze", {
-      task: task,
-      tool_names: useAgentStore.getState().tools.map((tool) => tool.name),
-    });
+  async analyzeTask(): Promise<Analysis> {
+    return await this.post<Analysis>("/bot/investment-research/chat/v2/completions/thought", {});
   }
 
   private async post<T>(
@@ -74,20 +74,22 @@ export class AgentApi {
   ) {
     const requestBody: RequestBody = {
       model_settings: this.props.model_settings,
-      goal: this.props.goal,
-      run_id: this.runId,
+      // goal: this.props.goal,
+      // run_id: this.runId,
+      message: this.props.goal,
+      session_id: this.runId || v1().toString(),
+      message_id: this.message_id,
       ...data,
     };
 
     try {
       useAgentStore.getState().setIsAgentThinking(true);
-      const { run_id, ...data } = await apiUtils.post<T & { run_id: string }>(
-        url,
-        requestBody,
-        this.props.session
-      );
+      const { session_id, message_id, ...data } = await apiUtils.post<
+        T & { session_id: string; message_id: string }
+      >(url, requestBody, this.props.session);
 
-      if (this.runId === undefined) this.runId = run_id;
+      if (this.runId === undefined) this.runId = session_id;
+      if (this.message_id === undefined) this.message_id = message_id;
       return data;
     } finally {
       useAgentStore.getState().setIsAgentThinking(false);

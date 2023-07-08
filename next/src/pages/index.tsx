@@ -1,21 +1,18 @@
-import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { type GetStaticProps, type NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef } from "react";
-import { FaCog, FaRobot, FaStar } from "react-icons/fa";
 import nextI18NextConfig from "../../next-i18next.config.js";
-import Button from "../components/Button";
 import Input from "../components/Input";
-import { TaskWindow } from "../components/TaskWindow";
-import AgentControls from "../components/console/AgentControls";
+// import { TaskWindow } from "../components/TaskWindow";
+import ExampleAgents from "../components/console/ExampleAgents";
+import HelpDialog from "../components/dialog/HelpDialog";
+import { SignInDialog } from "../components/dialog/SignInDialog";
+// import { ToolsDialog } from "../components/dialog/ToolsDialog";
 import { ChatMessage } from "../components/console/ChatMessage";
 import ChatWindow from "../components/console/ChatWindow";
-import Summarize from "../components/console/SummarizeButton";
-import HelpDialog from "../components/dialog/HelpDialog";
-import { ToolsDialog } from "../components/dialog/ToolsDialog";
 import FadeIn from "../components/motions/FadeIn";
 import Expand from "../components/motions/expand";
 import { useAgent } from "../hooks/useAgent";
@@ -37,7 +34,6 @@ import { resetAllTaskSlices, useTaskStore } from "../stores/taskStore";
 import { toApiModelSettings } from "../utils/interfaces";
 import { languages } from "../utils/languages";
 import { isEmptyOrBlank } from "../utils/whitespace";
-import ExampleAgents from "../components/console/ExampleAgents";
 
 const Home: NextPage = () => {
   const { t } = useTranslation("indexPage");
@@ -62,7 +58,7 @@ const Home: NextPage = () => {
   const { settings } = useSettings();
 
   const [showSignInDialog, setShowSignInDialog] = React.useState(false);
-  const [showToolsDialog, setShowToolsDialog] = React.useState(false);
+  // const [showToolsDialog, setShowToolsDialog] = React.useState(false);
   const agentUtils = useAgent();
 
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -83,15 +79,15 @@ const Home: NextPage = () => {
 
   const handlePlay = (name: string, goal: string) => {
     if (agentLifecycle === "stopped") handleRestart();
-    else if (name.trim() === "" || goal.trim() === "") return;
-    else handleNewAgent(name.trim(), goal.trim());
+    else if (goal.trim() === "") return;
+    else handleNewAgent(name.trim() || "agent", goal.trim());
   };
 
   const handleNewAgent = (name: string, goal: string) => {
-    if (session === null) {
-      setShowSignInDialog(true);
-      return;
-    }
+    // if (session === null) {
+    //   setShowSignInDialog(true);
+    //   return;
+    // }
 
     if (agent && agentLifecycle == "paused") {
       agent?.run().catch(console.error);
@@ -141,76 +137,71 @@ const Home: NextPage = () => {
   return (
     <DashboardLayout>
       <HelpDialog />
-      <ToolsDialog show={showToolsDialog} close={() => setShowToolsDialog(false)} />
+      {/* <ToolsDialog show={showToolsDialog} close={() => setShowToolsDialog(false)} /> */}
+      <SignInDialog show={showSignInDialog} close={() => setShowSignInDialog(false)} />
+      <img src="/images/Nav.png" alt="" className="w-full" />
 
-      <div id="content" className="flex min-h-screen w-full items-center justify-center">
+      {fullscreen ? (
         <div
-          id="layout"
-          className="flex h-screen w-full max-w-screen-xl flex-col items-center gap-1 p-2 sm:gap-3 sm:p-4"
+          id="content"
+          className="flex w-full flex-col items-center"
+          style={{
+            backgroundImage: "url('/images/bg2.png')",
+            backgroundColor: "#020e28",
+            backgroundPosition: "right bottom",
+            backgroundRepeat: "no-repeat",
+          }}
         >
-          <div>
-            <Button
-              className={clsx(
-                "rounded-r-none py-0 text-sm sm:py-[0.25em] xl:hidden",
-                mobileVisibleWindow == "Chat" ||
-                  "border-2 border-white/20 bg-gradient-to-t from-sky-500 to-sky-600 hover:bg-gradient-to-t hover:from-sky-400 hover:to-sky-600"
-              )}
-              disabled={mobileVisibleWindow == "Chat"}
-              onClick={() => handleVisibleWindowClick("Chat")}
-            >
-              Chat
-            </Button>
-            <Button
-              className={clsx(
-                "rounded-l-none py-0 text-sm sm:py-[0.25em] xl:hidden",
-                mobileVisibleWindow == "Tasks" ||
-                  "border-2 border-white/20 bg-gradient-to-t from-sky-500 to-sky-600 hover:bg-gradient-to-t hover:from-sky-400 hover:to-sky-600"
-              )}
-              disabled={mobileVisibleWindow == "Tasks"}
-              onClick={() => handleVisibleWindowClick("Tasks")}
-            >
-              任务
-            </Button>
+          <div
+            id="layout"
+            className="flex h-screen w-full max-w-screen-xl flex-col items-center gap-1 p-2 sm:gap-3 sm:p-4"
+          >
+            <Expand className="flex h-3/5 w-full overflow-hidden">
+              <ChatWindow
+                messages={messages}
+                visibleOnMobile={mobileVisibleWindow === "Chat"}
+                chatControls={
+                  agent
+                    ? {
+                        value: chatInput,
+                        onChange: (value: string) => {
+                          setChatInput(value);
+                        },
+                        handleChat: async () => {
+                          const currentInput = chatInput;
+                          setChatInput("");
+                          await agent?.chat(currentInput);
+                        },
+                        loading: tasks.length == 0,
+                      }
+                    : undefined
+                }
+              >
+                {messages.length === 0 && <ExampleAgents setAgentRun={setAgentRun} />}
+                {messages.map((message, index) => {
+                  return (
+                    <FadeIn key={`${index}-${message.type}`}>
+                      <ChatMessage message={message} />
+                    </FadeIn>
+                  );
+                })}
+              </ChatWindow>
+            </Expand>
           </div>
-          <Expand className="flex w-full flex-grow overflow-hidden">
-            <ChatWindow
-              messages={messages}
-              visibleOnMobile={mobileVisibleWindow === "Chat"}
-              chatControls={
-                agent
-                  ? {
-                      value: chatInput,
-                      onChange: (value: string) => {
-                        setChatInput(value);
-                      },
-                      handleChat: async () => {
-                        const currentInput = chatInput;
-                        setChatInput("");
-                        await agent?.chat(currentInput);
-                      },
-                      loading: tasks.length == 0,
-                    }
-                  : undefined
-              }
-            >
-              {messages.length === 0 && <ExampleAgents setAgentRun={setAgentRun} />}
-              {messages.map((message, index) => {
-                return (
-                  <FadeIn key={`${index}-${message.type}`}>
-                    <ChatMessage message={message} />
-                  </FadeIn>
-                );
-              })}
-              <Summarize />
-            </ChatWindow>
-            <TaskWindow visibleOnMobile={mobileVisibleWindow === "Tasks"} />
-          </Expand>
-
+        </div>
+      ) : (
+        <div
+          className="flex h-screen w-full flex-col"
+          style={{
+            background: "url('/images/bg1.jpg') center bottom 100% no-repeat #020e28",
+            backgroundSize: "contain",
+          }}
+        >
           <FadeIn
             delay={0}
             initialY={30}
             duration={1}
-            className="flex w-full flex-col items-center gap-2"
+            className="flex w-full flex-col items-center"
           >
             <AnimatePresence>
               {!fullscreen && (
@@ -219,60 +210,53 @@ const Home: NextPage = () => {
                   animate={{ opacity: 1, height: "fit-content" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.5, type: "easeInOut" }}
-                  className="flex w-full flex-col gap-2"
+                  className="mt-6 flex w-1/2"
                 >
-                  <div className="flex w-full flex-row items-end gap-2 md:items-center">
-                    <Input
-                      inputRef={nameInputRef}
-                      left={
-                        <>
-                          <FaRobot />
-                          <span className="ml-2">{`${t("AGENT_NAME")}`}</span>
-                        </>
-                      }
-                      value={nameInput}
-                      disabled={agent != null}
-                      onChange={(e) => setNameInput(e.target.value)}
-                      onKeyDown={(e) => handleKeyPress(e)}
-                      placeholder="AgentGPT"
-                      type="text"
-                    />
-                    <Button
-                      ping
-                      onClick={() => setShowToolsDialog(true)}
-                      className="border-white/20 bg-gradient-to-t from-sky-500 to-sky-600 transition-all hover:bg-gradient-to-t hover:from-sky-400 hover:to-sky-600"
-                    >
-                      <p className="mr-3">Tools</p>
-                      <FaCog />
-                    </Button>
-                  </div>
                   <Input
-                    left={
-                      <>
-                        <FaStar />
-                        <span className="ml-2">{`${t("LABEL_AGENT_GOAL")}`}</span>
-                      </>
-                    }
                     disabled={agent != null}
                     value={goalInput}
                     onChange={(e) => setGoalInput(e.target.value)}
                     onKeyDown={(e) => handleKeyPress(e)}
-                    placeholder={`${t("PLACEHOLDER_AGENT_GOAL")}`}
+                    placeholder="请输入您的需求"
                     type="textarea"
                   />
+                  <div className="ml-5" onClick={() => handlePlay(nameInput, goalInput)}>
+                    <img src="/images/Run.png" />
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
-            <AgentControls
-              disablePlay={disableStartAgent}
-              lifecycle={agentLifecycle}
-              handlePlay={() => handlePlay(nameInput, goalInput)}
-              handlePause={() => agent?.pauseAgent()}
-              handleStop={() => agent?.stopAgent()}
-            />
+
+            <div style={{ position: "absolute", left: "60px" }}>
+              <h1 style={{ color: "#FFF", fontSize: "30px" }}>您好！</h1>
+              <p style={{ color: "#FFF", fontSize: "22px" }}>我是佳佳，您的AI投研助理</p>
+              <p style={{ color: "#FFF", fontSize: "18px" }}>我可以协助您：</p>
+            </div>
           </FadeIn>
+
+          {!fullscreen && (
+            <div className="ml-10 mr-10 mt-16">
+              <div className="flex justify-between">
+                <ExampleAgents setAgentRun={setAgentRun} />
+                <div>
+                  <img
+                    src="/images/R1.png"
+                    className="w-4/5"
+                    style={{ objectFit: "contain" }}
+                    alt=""
+                  />
+                  <img
+                    src="/images/R2.png"
+                    className="w-4/5"
+                    style={{ objectFit: "contain" }}
+                    alt=""
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </DashboardLayout>
   );
 };

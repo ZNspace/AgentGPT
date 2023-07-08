@@ -1,7 +1,7 @@
-import React from "react";
-import Label from "./Label";
 import clsx from "clsx";
+import React from "react";
 import type { toolTipProperties } from "../types";
+import Label from "./Label";
 
 interface InputProps {
   small?: boolean; // Will lower padding and font size. Currently only works for the default input
@@ -50,11 +50,12 @@ const Input = (props: InputProps) => {
     inputElement = (
       <textarea
         className={clsx(
-          "border:black delay-50 h-15 background-color-5 placeholder:text-color-tertiary text-color-primary border-color-1 border-focusVisible-1 border-hover-1 w-full resize-none rounded-xl border-2 p-2 text-sm tracking-wider outline-0 transition-all sm:h-20 md:text-lg",
+          "border:black delay-50 h-15 placeholder:text-color-white text-color-primary border-color-1 border-focusVisible-1 border-hover-1 w-full resize-none rounded-xl border-2 p-2 text-sm tracking-wider outline-0 transition-all sm:h-20 md:text-lg",
           disabled && "cursor-not-allowed",
           left && "md:rounded-l-none",
           small && "text-sm sm:py-[0]"
         )}
+        style={{background: '#14142B'}}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
@@ -67,11 +68,16 @@ const Input = (props: InputProps) => {
     inputElement = (
       <input
         className={clsx(
-          "background-color-5 placeholder:text-color-tertiary text-color-primary border-color-1 border-focusVisible-1 border-hover-1 w-full rounded-xl border-2 p-2 py-1 text-sm tracking-wider outline-0 transition-all duration-200 sm:py-3 md:text-lg",
+          "text-color-primary border-color-1 border-focusVisible-1 border-hover-1 w-full border-2 p-2 py-1 text-sm tracking-wider outline-0 transition-all duration-200 sm:py-3 md:text-lg",
           disabled && "cursor-not-allowed",
           left && "md:rounded-l-none",
           small && "text-sm sm:py-[0]"
         )}
+        style={{
+          background:
+            "linear-gradient(0deg, #14142B 0%, #14142B 100%), linear-gradient(180deg, #02A4FF 0%, #7D40FF 100%)",
+          borderRadius: "50px",
+        }}
         ref={inputRef}
         placeholder={placeholder}
         type={type}

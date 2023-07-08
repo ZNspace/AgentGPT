@@ -1,8 +1,5 @@
 import FadeIn from "../motions/FadeIn";
-import { ChatMessage } from "./ChatMessage";
-import { MESSAGE_TYPE_SYSTEM } from "../../types/message";
 import { ExampleAgentButton } from "./ExampleAgentButton";
-import React from "react";
 
 type ExampleAgentsProps = {
   setAgentRun?: (name: string, goal: string) => void;
@@ -10,19 +7,56 @@ type ExampleAgentsProps = {
 const ExampleAgents = ({ setAgentRun }: ExampleAgentsProps) => {
   return (
     <>
-      <FadeIn delay={0.8} duration={0.5}>
-        <ChatMessage
-          message={{
-            type: MESSAGE_TYPE_SYSTEM,
-            value:
-              "👉 Create an agent by adding a name / goal, and hitting deploy! Try our examples below!",
-          }}
-        />
-      </FadeIn>
       <FadeIn delay={0.9} duration={0.5}>
-        <div className="m-2 flex flex-col justify-between gap-2 sm:m-4 sm:flex-row">
-          <ExampleAgentButton name="ResearchGPT 📜" setAgentRun={setAgentRun}>
-            生成新能源行业的综合报告
+        <div className="flex flex-col space-y-4">
+          <ExampleAgentButton
+            src="/images/L1.png"
+            name="写分析报告 📜"
+            setAgentRun={setAgentRun}
+          >
+            贵州茅台Q1的业绩点评。
+          </ExampleAgentButton>
+          <ExampleAgentButton
+            src="/images/L2.png"
+            name="写分析报告 📜"
+            setAgentRun={setAgentRun}
+          >
+            贵州茅台Q1的业绩点评。
+          </ExampleAgentButton>
+          <ExampleAgentButton
+            src="/images/L3.png"
+            name="写分析报告 📜"
+            setAgentRun={setAgentRun}
+          >
+            贵州茅台Q1的业绩点评。
+          </ExampleAgentButton>{" "}
+          <ExampleAgentButton
+            src="/images/L4.png"
+            name="写分析报告 📜"
+            setAgentRun={setAgentRun}
+          >
+            贵州茅台Q1的业绩点评。
+          </ExampleAgentButton>{" "}
+          <ExampleAgentButton
+            src="/images/L5.png"
+            name="写分析报告 📜"
+            setAgentRun={setAgentRun}
+          >
+            贵州茅台Q1的业绩点评。
+          </ExampleAgentButton>{" "}
+          <ExampleAgentButton
+            src="/images/L6.png"
+            name="写分析报告 📜"
+            setAgentRun={setAgentRun}
+          >
+            贵州茅台Q1的业绩点评。
+          </ExampleAgentButton>{" "}
+          <ExampleAgentButton
+            src="/images/L7.png"
+            name="写分析报告 📜"
+            setAgentRun={setAgentRun}
+          >
+            贵州茅台Q1的业绩点评。
           </ExampleAgentButton>
         </div>
       </FadeIn>

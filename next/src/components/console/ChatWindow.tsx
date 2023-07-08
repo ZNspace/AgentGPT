@@ -1,15 +1,15 @@
+import clsx from "clsx";
+import { useTranslation } from "next-i18next";
 import type { ReactNode } from "react";
 import React, { useEffect, useRef, useState } from "react";
-import { useTranslation } from "next-i18next";
+import { FaArrowCircleDown, FaCommentDots } from "react-icons/fa";
+import { ImSpinner2 } from "react-icons/im";
+import { useAgentStore } from "../../stores";
+import Button from "../Button";
+import Input from "../Input";
 import HideShow from "../motions/HideShow";
-import clsx from "clsx";
 import type { HeaderProps } from "./MacWindowHeader";
 import { MacWindowHeader, messageListId } from "./MacWindowHeader";
-import { FaArrowCircleDown, FaCommentDots } from "react-icons/fa";
-import { useAgentStore } from "../../stores";
-import { ImSpinner2 } from "react-icons/im";
-import Input from "../Input";
-import Button from "../Button";
 
 interface ChatControls {
   value: string;
@@ -35,7 +35,7 @@ const ChatWindow = ({
   const [t] = useTranslation();
   const [hasUserScrolled, setHasUserScrolled] = useState(false);
   const isThinking = useAgentStore.use.isAgentThinking();
-  const isStopped = useAgentStore.use.lifecycle() === "stopped";
+  // const isStopped = useAgentStore.use.lifecycle() === "stopped";
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
@@ -88,7 +88,7 @@ const ChatWindow = ({
         {children}
         <div
           className={clsx(
-            isThinking && !isStopped ? "opacity-100" : "opacity-0",
+            isThinking ? "opacity-100" : "opacity-0",
             "mx-2 flex flex-row items-center gap-2 rounded-lg border border-white/20 p-2 font-mono transition duration-300 sm:mx-4",
             "text-xs sm:text-base"
           )}

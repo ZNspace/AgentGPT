@@ -9,6 +9,7 @@ export default class StartGoalWork implements AgentWork {
   run = async () => {
     const goalMessage = this.parent.messageService.sendGoalMessage(this.parent.model.getGoal());
     this.tasksValues = await this.parent.api.getInitialTasks();
+    console.log("🚀 ~ file: start-task-work.ts:12 ~ StartGoalWork ~ run= ~ tasksValues:", this.tasksValues)
     await this.parent.api.createAgent();
     this.parent.api.saveMessages([goalMessage]);
   };

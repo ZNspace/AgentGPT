@@ -1,17 +1,17 @@
 import type { Session } from "next-auth";
-import type { AgentApi } from "./agent-api";
-import type { ModelSettings } from "../../types";
-import type { MessageService } from "./message-service";
-import type { AgentRunModel } from "./agent-run-model";
 import { useAgentStore } from "../../stores";
+import type { ModelSettings } from "../../types";
 import { isRetryableError } from "../../types/errors";
-import AnalyzeTaskWork from "./agent-work/analyze-task-work";
-import StartGoalWork from "./agent-work/start-task-work";
-import type AgentWork from "./agent-work/agent-work";
-import { withRetries } from "../api-utils";
 import type { Message } from "../../types/message";
-import SummarizeWork from "./agent-work/summarize-work";
+import { withRetries } from "../api-utils";
+import type { AgentApi } from "./agent-api";
+import type { AgentRunModel } from "./agent-run-model";
+import type AgentWork from "./agent-work/agent-work";
+import AnalyzeTaskWork from "./agent-work/analyze-task-work";
 import ChatWork from "./agent-work/chat-work";
+import StartGoalWork from "./agent-work/start-task-work";
+import SummarizeWork from "./agent-work/summarize-work";
+import type { MessageService } from "./message-service";
 
 class AutonomousAgent {
   model: AgentRunModel;
@@ -56,7 +56,7 @@ class AutonomousAgent {
       // Get and run the next work item
       const work = this.workLog[0];
       await this.runWork(work, () => this.model.getLifecycle() === "stopped");
-
+      debugger;
       this.workLog.shift();
       if (this.model.getLifecycle() !== "running") {
         this.lastConclusion = () => work.conclude();
@@ -77,7 +77,6 @@ class AutonomousAgent {
     if (this.model.getLifecycle() !== "running") return;
 
     // Done with everything in the log and all queued tasks
-    this.messageService.sendCompletedMessage();
     this.stopAgent();
   }
 

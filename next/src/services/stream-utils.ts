@@ -70,3 +70,14 @@ export const streamText = async (
 
   await processStream(reader, onStart, onText, shouldClose);
 };
+
+
+export async function processThought(
+  text: string,
+  onStart: () => void,
+  onText: (text: string) => void,
+): Promise<void> {
+  console.log("🚀 ~ file: stream-utils.ts:81 ~ text:", text);
+  onStart();
+  onText(text);
+}
